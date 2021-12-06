@@ -1,37 +1,28 @@
 
-
--- From http://lua-users.org/wiki/FileInputOutput
--- Return true if file exists and is readable.
-function file_exists(path)
-    local file = io.open(path, "rb")
-    if file then file:close() end
-    return file ~= nil
-end
-
 -- Read an entire file.
 -- Use "a" in Lua 5.3; "*a" in Lua 5.1 and 5.2
-function readall(filename)
+local function readall(filename)
     local fh = assert(io.open(filename, "rb"))
     local contents = assert(fh:read(_VERSION <= "Lua 5.2" and "*a" or "a"))
     fh:close()
     return contents
 end
 
-function splitLines(inputFileText)
-    lines = {}
+local function splitLines(inputFileText)
+    local lines = {}
     for s in inputFileText:gmatch("[^\r\n]+") do
         table.insert(lines, s)
     end
     return lines
 end
 
-local Lines = splitLines(readall("input.txt"))
+local lines = splitLines(readall("input.txt"))
 
 -- PART ONE
 
 local prevDepth = nil
 local increaseCounter = 0
-for _k, line in ipairs(Lines) do
+for _k, line in ipairs(lines) do
     local newDepth = tonumber(line)
     if prevDepth ~= nil then
         if newDepth > prevDepth then
@@ -50,7 +41,7 @@ local secondPrevious = nil
 local previousWindowSum = nil
 local rollingWindowSum = 0
 increaseCounter = 0
-for _k, line in ipairs(Lines) do
+for _k, line in ipairs(lines) do
     local newDepth = tonumber(line)
     if secondPrevious ~= nil then
         rollingWindowSum = previous + secondPrevious + newDepth
