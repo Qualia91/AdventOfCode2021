@@ -86,19 +86,22 @@
 
 (define middle-value (get-at-index sorted-list half-length))
 
-
 ; calc fuel cost for this value
-(define (find-fuel-cost center pos-list) 
+(define (part-one-cost-function center pos-list) 
   (fold-left (lambda (sum next-val) (+ sum (abs (- next-val center))))
     0
     pos-list))
 
-(define middle-cost (find-fuel-cost middle-value sorted-list))
+; cost function for part 2
+(define (part-two-cost-function center pos-list) 
+  (fold-left (lambda (sum next-val) (+ sum (triangle-number (abs (- next-val center)) 0)))
+    0
+    pos-list))
 
 ; find direction of travel
-(define (find-direction in-middle in-cost) 
-  (let ((lower (find-fuel-cost (- in-middle 1) sorted-list)) 
-        (higher (find-fuel-cost (+ in-middle 1) sorted-list)))
+(define (find-direction in-middle in-cost cost-function) 
+  (let ((lower (cost-function (- in-middle 1) sorted-list)) 
+        (higher (cost-function (+ in-middle 1) sorted-list)))
     (cond 
       ((and (< in-cost higher) (< in-cost lower)) 0)
       ((< lower higher) -1)
@@ -107,22 +110,39 @@
   )
 )
 
-(define direction-of-travel (find-direction middle-value middle-cost))
-
 ; now find minumum
-(define (find-min start-val pos-list direction start-cost)
-  (let ((next-cost (find-fuel-cost (+ start-val direction) pos-list)))
+(define (find-min start-val pos-list direction start-cost cost-function)
+  (let ((next-cost (cost-function (+ start-val direction) pos-list)))
     (if (and (< start-cost next-cost)) 
         start-cost
-        (find-min (+ start-val direction) pos-list direction next-cost)
+        (find-min (+ start-val direction) pos-list direction next-cost cost-function)
     )
   )
 )
 
-(if (eq? direction-of-travel 0)
-  middle-cost
-  (find-min (+ middle-value direction-of-travel) sorted-list direction-of-travel (find-fuel-cost (+ middle-value direction-of-travel) sorted-list))
+(define (calc-min cost-function middle-cost middle-value direction-of-travel)
+  (if (eq? direction-of-travel 0)
+    middle-cost
+    (find-min (+ middle-value direction-of-travel) sorted-list direction-of-travel (cost-function (+ middle-value direction-of-travel) sorted-list) cost-function)
+  )
 )
+
+(define (triangle-number val sum)
+  (if (eq? val 0)
+      sum
+      (triangle-number (- val 1) (+ sum val))
+  )
+)
+
+(define (calc-min-fuel-consumption cost-function) 
+  (let 
+    ((middle-cost (cost-function middle-value sorted-list)))
+   (calc-min cost-function middle-cost middle-value (find-direction middle-value middle-cost cost-function)) 
+  )
+)
+
+(calc-min-fuel-consumption part-one-cost-function) 
+(calc-min-fuel-consumption part-two-cost-function) 
 
 ;; work out all values for video
 ;(fold-left (lambda (sum next-val) (begin (display "\n") (display (find-fuel-cost next-val sorted-list))))
