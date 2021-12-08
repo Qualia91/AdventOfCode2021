@@ -5,3 +5,4 @@ Day12/.nrepl-port
 Day12/target
 .lsp
 *.class
+*.beam
