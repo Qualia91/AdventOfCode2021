@@ -50,6 +50,7 @@
         "cstring": "cpp",
         "ctime": "cpp",
         "map": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "stdio.h": "c"
     }
 }
