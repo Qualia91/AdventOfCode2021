@@ -1,12 +1,11 @@
-using System;
+
+namespace Day10 {
   
-namespace HelloWorldApp {
-  
-    class Geeks {
+    class Day10 {
     
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            System.Console.WriteLine("Hello World!");
 
             string[] lines = System.IO.File.ReadAllLines(@"testInput.txt");
 
