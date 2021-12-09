@@ -3,8 +3,10 @@ import Control.Monad
 import Data.Char(digitToInt)
 import Debug.Trace 
 
+data LowPoint = LowPoint Int Int Int deriving Show
+
 main = do
-    contents <- readFile "input.txt"
+    contents <- readFile "testInput.txt"
     let matrix = createInputMatrix (lines contents)
 
     let xLength = ((length matrix) - 1)
@@ -12,9 +14,14 @@ main = do
 
     let indices = [(x,y) | x <- [0..xLength], y <- [0..yLength]]
 
-    let ret = foldl (\sum (x, y) -> sum + checkMatrixEntry x y matrix) 0 indices
+    -- part one
+    let lowPoints = foldl (\acc (x, y) -> (LowPoint (checkMatrixEntry x y matrix) x y) : acc) [] indices
+    let partOne = foldl (\sum (LowPoint val _ _) -> sum + val) 0 lowPoints
 
-    print ret
+    -- part two - flood fill
+    let basicSizes = foldl (\basinSizesSum (LowPoint val x y) -> (findBasin x y matrix) : basinSizesSum) [] lowPoints
+
+    print basicSizes
 
 checkMatrixEntry :: Int -> Int -> [[Int]] -> Int
 checkMatrixEntry indexX indexY matrix = do
@@ -48,3 +55,6 @@ nthelem _ Nothing = Nothing
 nthelem _ (Just []) = Nothing
 nthelem 0 (Just (x:xs)) = Just x
 nthelem n (Just (x:xs)) = nthelem (n - 1) (Just xs)
+
+findBasin :: Int -> Int -> [[Int]] -> Int
+findBasin x y matrix = 1
