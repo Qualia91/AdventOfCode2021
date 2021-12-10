@@ -2,11 +2,13 @@ import System.IO
 import Control.Monad
 import Data.Char(digitToInt)
 import Debug.Trace 
+import Data.List
 
-data LowPoint = LowPoint Int Int Int deriving Show
+data Coord = Coord Int Int Int deriving Show
+data Point = Point Coord [Coord] deriving Show
 
 main = do
-    contents <- readFile "testInput.txt"
+    contents <- readFile "input.txt"
     let matrix = createInputMatrix (lines contents)
 
     let xLength = ((length matrix) - 1)
@@ -15,21 +17,45 @@ main = do
     let indices = [(x,y) | x <- [0..xLength], y <- [0..yLength]]
 
     -- part one
-    let lowPoints = foldl (\acc (x, y) -> (LowPoint (checkMatrixEntry x y matrix) x y) : acc) [] indices
-    let partOne = foldl (\sum (LowPoint val _ _) -> sum + val) 0 lowPoints
+    let points = foldl (\acc (x, y) -> (createPoint x y matrix) : acc) [] indices
+    let minPoints = foldl (\acc point -> addMinPoint (isMinPoint point) point acc) [] points
+    let partOne = foldl (\sum (Point (Coord _ _ val) _) -> sum + val + 1) 0 minPoints
 
     -- part two - flood fill
-    let basicSizes = foldl (\basinSizesSum (LowPoint val x y) -> (findBasin x y matrix) : basinSizesSum) [] lowPoints
+    let partTwo = product $ take 3 $ sortOn negate $ foldl (\basinsAcc lowPoint -> length (findBasin lowPoint points []) : basinsAcc) [] minPoints
 
-    print basicSizes
+    print ("Part One Answer: " ++ show partOne ++ " - Part Two Answer: " ++ show partTwo)
 
-checkMatrixEntry :: Int -> Int -> [[Int]] -> Int
-checkMatrixEntry indexX indexY matrix = do
+addMinPoint :: Bool -> Point -> [Point] -> [Point]
+addMinPoint True point sum = point : sum
+addMinPoint False _ sum = sum
+
+isMinPoint :: Point -> Bool
+isMinPoint (Point (Coord x y val) []) = True
+isMinPoint (Point (Coord x y val) ((Coord _ _ checkVal) : rest)) 
+ | val <= checkVal = isMinPoint (Point (Coord y x val) rest) 
+ | otherwise = False
+
+searchForPoint :: Coord -> [Point] -> Maybe Point
+searchForPoint _ [] = Nothing
+searchForPoint (Coord inX inY _) ((Point (Coord x y val) neighbours) : points) 
+ | (inX == x) && (inY == y) = Just (Point (Coord x y val) neighbours)
+ | otherwise = searchForPoint (Coord inX inY val) points
+
+createPoint :: Int -> Int -> [[Int]] -> Point
+createPoint indexX indexY matrix = do
     let entry = matrix !! indexX !! indexY
 
-    let ret = checkIndex (indexX-1) indexY entry matrix >>= checkIndex (indexX+1) indexY entry >>= checkIndex indexX (indexY-1) entry >>= checkIndex indexX (indexY+1) entry
+    let Just (neightbourPoints, _) = addNeighbour (indexX-1) indexY ([], matrix) >>= addNeighbour (indexX+1) indexY >>= addNeighbour indexX (indexY-1) >>= addNeighbour indexX (indexY+1)
 
-    returnIfJust ret (entry + 1)
+    (Point (Coord indexX indexY entry) neightbourPoints)
+
+addNeighbour :: Int -> Int -> ([Coord], [[Int]]) -> Maybe ([Coord], [[Int]])
+addNeighbour indexX indexY (points, matrix)
+ | indexX >= 0 && indexY >= 0 = case nthelem indexY (nthelem indexX (Just matrix)) of
+    Nothing -> Just (points, matrix)
+    Just val  -> Just (((Coord indexX indexY val) : points), matrix)
+ | otherwise = Just (points, matrix)
 
 returnIfJust :: Maybe a -> Int -> Int
 returnIfJust Nothing _ = 0
@@ -56,5 +82,25 @@ nthelem _ (Just []) = Nothing
 nthelem 0 (Just (x:xs)) = Just x
 nthelem n (Just (x:xs)) = nthelem (n - 1) (Just xs)
 
-findBasin :: Int -> Int -> [[Int]] -> Int
-findBasin x y matrix = 1
+notAlreadyVisited :: Coord -> [Coord] -> Bool
+notAlreadyVisited (Coord x y val) [] = True
+notAlreadyVisited (Coord inX inY val) ((Coord x y _) : visited)
+  | inX == x && inY == y = False
+  | otherwise = notAlreadyVisited (Coord inX inY val) visited
+
+extract :: Maybe a -> a
+extract (Just val) = val
+
+getAllowedNeighbours :: [Coord] -> [Coord] -> [Coord]
+getAllowedNeighbours visited [] = []
+getAllowedNeighbours visited ((Coord x y val) : rest)
+  | val /= 9 && notAlreadyVisited (Coord x y val) visited = (Coord x y val) : getAllowedNeighbours visited rest
+  | otherwise = getAllowedNeighbours visited rest
+
+findBasin :: Point -> [Point] -> [Coord] -> [Coord]
+findBasin (Point _ []) points visited = visited
+findBasin (Point inCoord neighbours) points visited 
+  | notAlreadyVisited inCoord visited = foldl (\acc allowedNeighbourCoord -> findBasin (extract (searchForPoint allowedNeighbourCoord points)) points acc) (inCoord : visited) (getAllowedNeighbours visited neighbours) 
+  | otherwise = visited
+
+
