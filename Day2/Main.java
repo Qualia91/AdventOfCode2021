@@ -32,7 +32,7 @@ class Main {
         for (String line : lines) {
 
             String[] inputs = line.split(" ");
-            String command = inputs[0].replaceAll("\\s+", "");
+            String command = inputs[0];
             int val = Integer.parseInt(inputs[1].replaceAll("\\s+", ""));
 
             if (command.equals(FORWARD)) {
