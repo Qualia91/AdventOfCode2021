@@ -22,9 +22,11 @@ class Main {
     public static void main(String[] args) throws IOException {
         Main main = new Main();
 
-        IntPair ReturnPair = main.CalculateHorizontalAndDepth();
+        IntPair ReturnPairPartOne = main.CalculateHorizontalAndDepthPartOne();
+        IntPair ReturnPairPartTwo = main.CalculateHorizontalAndDepthPartTwo();
 
-        System.out.println("Forward: " + ReturnPair.a + ", Depth: " + ReturnPair.b + ", Answer: " + (ReturnPair.a * ReturnPair.b));
+        System.out.println("Part One - Forward: " + ReturnPairPartOne.a + ", Depth: " + ReturnPairPartOne.b + ", Answer: " + (ReturnPairPartOne.a * ReturnPairPartOne.b));
+        System.out.println("Part Two - Forward: " + ReturnPairPartTwo.a + ", Depth: " + ReturnPairPartTwo.b + ", Answer: " + (ReturnPairPartTwo.a * ReturnPairPartTwo.b));
     }
 
     private final String[] lines;
@@ -34,7 +36,32 @@ class Main {
         this.lines = fileContents.split("\n");
     }
 
-    public IntPair CalculateHorizontalAndDepth() {
+    public IntPair CalculateHorizontalAndDepthPartOne() {
+        int forward = 0;
+        int depth = 0;
+
+        for (String line :  lines) {
+
+            String[] inputs = line.split(" ");
+            String command = inputs[0].replaceAll("\\s+", "");
+            int val = Integer.parseInt(inputs[1].replaceAll("\\s+", ""));
+
+            if (command.equals(FORWARD)) {
+                forward += val;
+            } else if (command.equals(DOWN)) {
+                depth += val;
+            } else if (command.equals(UP)) {
+                depth -= val;
+            } else {
+                System.out.println("No Match");
+            }
+            
+        }
+
+        return new IntPair(forward, depth);
+    }
+
+    public IntPair CalculateHorizontalAndDepthPartTwo() {
         int forward = 0;
         int depth = 0;
         int aim = 0;
