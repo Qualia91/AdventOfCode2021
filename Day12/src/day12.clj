@@ -37,13 +37,13 @@
 (defn all-uppercase? [s]
   (= s (str/upper-case s)))
 
-(defn find-path-iter [current-point pairs-list path-so-far]
+(defn find-path-iter [current-point pairs-list path-so-far can-we-visit-function]
   (if (all-uppercase? current-point)
-      (find-path current-point pairs-list (conj path-so-far current-point))
+      (find-path current-point pairs-list (conj path-so-far current-point) can-we-visit-function)
       (let
        [groups (group-into-start-and-rest pairs-list current-point)]
         (println current-point)
-        (find-path current-point (get groups false) (conj path-so-far current-point)))
+        (find-path current-point (get groups false) (conj path-so-far current-point) can-we-visit-function))
   )
 )
 
@@ -66,13 +66,33 @@
   )
 )
 
-(defn find-path [current-point pairs-list path-so-far]
+(defn have-we-double-checked-a-small-cave? [path-so-far] 
+  (if (empty? (reduce (fn [acc-set next-cave] 
+                (if (all-uppercase? next-cave) 
+                  acc-set 
+                  (if (contains? acc-set next-cave) (reduced #{}) (conj acc-set next-cave))
+                )
+              ) #{} path-so-far
+      ))   
+    true
+    false)
+)
+
+(defn can-we-vist-part-two? [current-point path-so-far]
+  (if (all-uppercase? current-point)
+    true
+    (if (have-we-double-checked-a-small-cave? path-so-far)
+      (not (in? path-so-far current-point))
+      true)
+    ))
+
+(defn find-path [current-point pairs-list path-so-far can-we-visit-function]
   (if (= "end" current-point)
     (route (conj path-so-far "end"))
     (reduce
-     (fn [result next-pair] (concat result (find-path (get-end-point next-pair current-point) pairs-list (conj path-so-far current-point))))
+     (fn [result next-pair] (concat result (find-path (get-end-point next-pair current-point) pairs-list (conj path-so-far current-point) can-we-visit-function)))
      []
-     (filter #(and (does-link-contain-point? % current-point) (can-we-vist? current-point path-so-far)) pairs-list))
+     (filter #(and (does-link-contain-point? % current-point) (can-we-visit-function current-point path-so-far)) pairs-list))
   )
 )
 
@@ -83,7 +103,7 @@
   [& args]
   (let [groups (group-into-start-and-rest (read-file "input.txt") "start")]
     (count (reduce
-     (fn [result start-pair] (concat result (find-path (:end start-pair) (get groups false) ["start"])))
+     (fn [result start-pair] (concat result (find-path (:end start-pair) (get groups false) ["start"] can-we-vist-part-two?)))
      []
      (get groups true))))
 )
