@@ -28,8 +28,7 @@ part_one() ->
     {ok, BinData} = file:read_file("input.txt"),
     {Template, Mapping} = parse_file(BinData),
     FinalTemplate = lists:foldl(
-        fun(Num, UpdatedTemplate) ->
-            io:format("Processing iter ~p~n", [Num]),
+        fun(_Num, UpdatedTemplate) ->
             do_step(UpdatedTemplate, Mapping, <<>>)
         end,
         Template,
