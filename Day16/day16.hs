@@ -37,7 +37,7 @@ main = do
 
     let sumOfVersionNumbers = sum_version_numbers final
 
-    let calculation = preform_calculation final
+    let [calculation] = preform_calculation final
 
     print ("Part One Answer: " ++ (show sumOfVersionNumbers))
     print ("Part Two Answer: " ++ (show calculation))
