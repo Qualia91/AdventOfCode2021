@@ -6,3 +6,5 @@ Day12/target
 .lsp
 *.class
 *.beam
+*/.calva*
+*/.nrepl-port
