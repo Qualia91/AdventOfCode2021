@@ -9,16 +9,19 @@ func myLoad():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var content = myLoad();
+	
+	var content = myLoad()
 	
 	var lines = content.split("\n")
 	
 	var hitDictionary = {}
+	var diagDictionary = {}
 	
 	for line in lines:
-		var commands = line.split(" -> ");
-		var firstPoint = commands[0].split(",");
-		var secondPoint = commands[1].split(",");
+		var commands = line.split(" -> ")
+
+		var firstPoint = commands[0].split(",")
+		var secondPoint = commands[1].split(",")
 		
 		var firstX = int(firstPoint[0])
 		var firstY = int(firstPoint[1])
@@ -26,43 +29,48 @@ func _ready():
 		var secondX = int(secondPoint[0])
 		var secondY = int(secondPoint[1])
 		
-		# if x == x, do y line
 		if (firstX == secondX):
-			addPointsTodDictionaryY(hitDictionary, firstY, secondY, firstX)
-		
-		# if y == y, do x line
+			addPointsToDictionaryY(hitDictionary, firstY, secondY, firstX)
+			addPointsToDictionaryY(diagDictionary, firstY, secondY, firstX)
+			
 		if (firstY == secondY):
-			addPointsTodDictionaryX(hitDictionary, firstX, secondX, firstY)
-		
+			addPointsToDictionaryX(hitDictionary, firstX, secondX, firstY)
+			addPointsToDictionaryX(diagDictionary, firstX, secondX, firstY)
+			
 		var diagVal = isDiagonal(firstX, firstY, secondX, secondY)
 		
-		# check if they are diagonal negative
 		if diagVal == 1:
 			if firstX < secondX:
-				addPointsTodDictionaryDiag(hitDictionary, firstX, secondX, firstY, secondY, 1, 1)
+				addPointsToDictionaryDiag(diagDictionary, firstX, secondX, firstY, secondY, 1)
 			else:
-				addPointsTodDictionaryDiag(hitDictionary, secondX, firstX, secondY, firstY, 1, 1)
+				addPointsToDictionaryDiag(diagDictionary, secondX, firstX, secondY, firstY, 1)
 		
-		# check if they are diagonal positive
 		if diagVal == -1:
-			if secondX > firstX:
-				addPointsTodDictionaryDiag(hitDictionary, secondX, firstX, secondY, firstY, -1, 1)
+			if firstX < secondX:
+				addPointsToDictionaryDiag(diagDictionary, secondX, firstX, secondY, firstY, -1)
 			else:
-				addPointsTodDictionaryDiag(hitDictionary, firstX, secondX, firstY, secondY, -1, 1)
-
-	# now go through dict and get all entries with value 2 and over
+				addPointsToDictionaryDiag(diagDictionary, firstX, secondX, firstY, secondY, -1)
+		
+			
 	var sum = 0
 	for val in hitDictionary.values():
 		if val >= 2:
 			sum+=1
-			
-	print("Result: " + String(sum))	
-
-func addPointsTodDictionaryDiag(dictionary, firstX, secondX, firstY, secondY, gradientX, gradientY):
 	
+	$VBoxContainer/HBoxContainer/Day1.text = "Day 1: " + String(sum)
+	
+	sum = 0
+	for val in diagDictionary.values():
+		if val >= 2:
+			sum+=1
+			
+	$VBoxContainer/HBoxContainer2/Day2.text = "Day 2: " + String(sum)
+	
+	
+func addPointsToDictionaryDiag(dict, firstX, secondXD, firstY, secondY, gradientX):
 	for inc in range(0, (secondY - firstY) + 1):
-		addPointToDict(dictionary, firstX + (inc * gradientX), firstY + (inc * gradientY))
-
+		addPointToDict(dict, firstX + (inc * gradientX), firstY + inc)
+	
 func isDiagonal(firstX, firstY, secondX, secondY):
 	var xDiff = secondX - firstX
 	var yDiff = secondY - firstY
@@ -73,39 +81,35 @@ func isDiagonal(firstX, firstY, secondX, secondY):
 		# intersects x axis positive 45 degrees
 		return -1
 	return 0
-
-func addPointsTodDictionaryY(dictionary, startY, endY, x):
 	
-	var s = startY
-	var e = endY
-	if endY < startY:
-		s = endY
-		e = startY
-	
-	for y in range(s, e + 1):
-		addPointToDict(dictionary, x, y)
-
-func addPointsTodDictionaryX(dictionary, startX, endX, y):
-	
-	var s = startX
-	var e = endX
-	if endX < startX:
-		s = endX
-		e = startX
+				
+func orderPointsCorrectly(start, end):
+	var s = start
+	var e = end
+	if end < start:
+		s = end
+		e = start
+	return [s,e]
 		
-	for x in range(s, e + 1):
-		addPointToDict(dictionary, x, y)
+func addPointsToDictionaryY(hitDict, startY, endY, x):
+	var actualStartAndEnd = orderPointsCorrectly(startY, endY)
+	
+	for y in range(actualStartAndEnd[0], actualStartAndEnd[1] + 1):
+		addPointToDict(hitDict, x, y)
+			
+func addPointsToDictionaryX(hitDict, startX, endX, y):
+	var actualStartAndEnd = orderPointsCorrectly(startX, endX)
+	
+	for x in range(actualStartAndEnd[0], actualStartAndEnd[1] + 1):
+		addPointToDict(hitDict, x, y)
 		
-func addPointToDict(dict, x, y):
+func addPointToDict(hitDict, x, y):
 	# create point
 	var newPoint = [x, y]
 	
 	# check for entry in dictionary
-	if dict.has(newPoint):
-		var hits = dict.get(newPoint) + 1
-		dict[newPoint] = hits
+	if hitDict.has(newPoint):
+		var hits = hitDict.get(newPoint) + 1
+		hitDict[newPoint] = hits
 	else:
-		dict[newPoint] = 1
-		
-	
-	
+		hitDict[newPoint] = 1

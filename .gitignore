@@ -8,3 +8,4 @@ Day12/target
 *.beam
 */.calva*
 */.nrepl-port
+*/*.import
