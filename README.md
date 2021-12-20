@@ -19,3 +19,26 @@ The languages are as follows:
 * Scheme
 
 I'm also making a youtube video series of my progress, check it out here: [Advent of Code - Code Roulette Playlist](https://www.youtube.com/watch?v=k5qJSX28k30&list=PLkD0xuVmwo66rb2HeN561x_mcg9fvSXIC&ab_channel=BOCDev)
+
+The days so far:
+
+1)  Lua
+2)  Java
+3)  Javacsript
+4)  C++
+5)  GS Script
+6)  Erlang
+7)  Scheme
+8)  C
+9)  Haskell
+10) C#
+11) Python
+12) Clojure
+13) Go
+14) Erlang
+15) Python (Unfinished)
+16) Haskell
+17) C++
+18) Clojure (Unfinished)
+
+Hopefully will be able to finished this challenge by next year :)
