@@ -107,7 +107,7 @@ class TargetOperator {
         
 };
 
-void partOne() {
+int main() {
 
     std::cout << "Part One" << std::endl;
 
@@ -138,11 +138,5 @@ void partOne() {
 
     std::cout << "Distinct Values: " << to->calculatePartTwo() << std::endl;
 
-    return;
-};
-
-int main()
-{
-    partOne();
     return 0;
 };
