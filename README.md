@@ -18,7 +18,7 @@ The languages are as follows:
 * Python
 * Scheme
 
-I'm also making a youtube video series of my progress, check it out here: [Advent of Code - Code Roulette Playlist](https://www.youtube.com/watch?v=k5qJSX28k30&list=PLkD0xuVmwo66rb2HeN561x_mcg9fvSXIC&ab_channel=BOCDev)
+I'm also making a youtube video series of my progress, check it out here: [Advent of Code - Code Roulette Playlist](https://www.youtube.com/playlist?list=PLkD0xuVmwo66rb2HeN561x_mcg9fvSXIC)
 
 The days so far:
 
