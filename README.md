@@ -4,18 +4,18 @@ This year i have chosen 13 languages and put them all into a hat. Each day, im p
 
 The language are as follows:
 
-c
-c++
-c#
-clojure
-erlang
-gdscript
-go
-haskell
-java
-javascript
-lua
-python
-scheme
+* c
+* c++
+* c#
+* clojure
+* erlang
+* gdscript
+* go
+* haskell
+* java
+* javascript
+* lua
+* python
+* scheme
 
 I'm also making a youtube video series of my progress, check it out here: [Advent of Code - Code Roulette Playlist | https://www.youtube.com/playlist?list=PLkD0xuVmwo66rb2HeN561x_mcg9fvSXIC]
